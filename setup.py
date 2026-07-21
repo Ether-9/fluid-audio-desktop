@@ -2,7 +2,7 @@ from setuptools import setup, Extension
 import pybind11
 import os
 
-# ALL your C++ source files (37 files)
+# ALL your C++ source files (16 files including native_audio.cpp)
 cpp_sources = [
     'AdvancedEqualizer.cpp',
     'AlbumArtDownloader.cpp',
@@ -12,7 +12,7 @@ cpp_sources = [
     'LyricsDisplay.cpp',
     'MainWindow.cpp',
     'MusicDatabase.cpp',
-    'native_audio.cpp',
+    'native_audio.cpp',          # ← IMPORTANT: Your pybind11 module
     'PitchShifter.cpp',
     'ReplayGain.cpp',
     'SmartPlaylist.cpp',
@@ -21,7 +21,7 @@ cpp_sources = [
     'WaveformWidget.cpp'
 ]
 
-# ALL your header files
+# ALL your header files (15 headers including miniaudio.h)
 header_files = [
     'AdvancedEqualizer.h',
     'AlbumArtDownloader.h',
@@ -31,6 +31,7 @@ header_files = [
     'LyricsDisplay.h',
     'MainWindow.h',
     'MusicDatabase.h',
+    'miniaudio.h',      # ← 4.11 MB header - INCLUDED
     'PitchShifter.h',
     'ReplayGain.h',
     'SmartPlaylist.h',
@@ -49,7 +50,7 @@ native_module = Extension(
     language='c++',
     extra_compile_args=['-std=c++17', '-O3'],
     extra_link_args=[],
-    libraries=['rubberband'],  # Link RubberBand
+    libraries=['rubberband'],
 )
 
 setup(
