@@ -22,7 +22,7 @@ pkg_check_modules(RUBBERBAND REQUIRED rubberband)
 
 # 5. Create the Python Extension Module with ALL files
 pybind11_add_module(native_audio 
-    # ALL Header Files (Required for AUTOMOC)
+    # ALL Header Files (Including miniaudio.h)
     AdvancedEqualizer.h
     AlbumArtDownloader.h
     AlbumArtWidget.h
@@ -31,6 +31,7 @@ pybind11_add_module(native_audio
     LyricsDisplay.h
     MainWindow.h
     MusicDatabase.h
+    miniaudio.h          # ← 4.11 MB header - INCLUDED
     PitchShifter.h
     ReplayGain.h
     SmartPlaylist.h
@@ -38,7 +39,7 @@ pybind11_add_module(native_audio
     ThemeManager.h
     WaveformWidget.h
 
-    # ALL Source Files
+    # ALL Source Files (Including native_audio.cpp)
     AdvancedEqualizer.cpp
     AlbumArtDownloader.cpp
     AlbumArtWidget.cpp
@@ -47,7 +48,7 @@ pybind11_add_module(native_audio
     LyricsDisplay.cpp
     MainWindow.cpp
     MusicDatabase.cpp
-    native_audio.cpp
+    native_audio.cpp     # ← IMPORTANT: Your pybind11 module
     PitchShifter.cpp
     ReplayGain.cpp
     SmartPlaylist.cpp
