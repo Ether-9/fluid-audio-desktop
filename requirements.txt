@@ -1,7 +1,7 @@
 pyinstaller==6.10.0
 PySide6==6.7.2
 pybind11==2.13.1
-rubberband==0.3.0
+rubberband==1.0.2
 requests==2.32.3
 keyring==25.4.0
 cryptography==43.0.1
