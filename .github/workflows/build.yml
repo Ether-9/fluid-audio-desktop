@@ -8,23 +8,17 @@ on:
 
 jobs:
   build:
-    name: Build Fluid Audio for ${{ matrix.os }}
+    name: Build for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
           - os: windows-latest
             ext: .exe
-            icon: icon.ico
-            python_ext: .pyd
           - os: macos-latest
             ext: .dmg
-            icon: icon.ico
-            python_ext: .so
           - os: ubuntu-latest
             ext: .AppImage
-            icon: icon.ico
-            python_ext: .so
 
     steps:
       - name: Checkout code
@@ -35,60 +29,63 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pyinstaller
-
-      - name: Install build tools (Linux)
+      - name: Install dependencies (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            qt6-base-dev \
+            qt6-base-dev-tools \
+            libqt6core5compat6-dev \
+            libqt6network6 \
+            libqt6sql6 \
+            librubberband-dev \
+            pkg-config
 
-      - name: Install build tools (macOS)
+      - name: Install dependencies (macOS)
         if: matrix.os == 'macos-latest'
         run: |
           brew install cmake
+          brew install qt6
+          brew install rubberband
+          brew install pkg-config
 
-      - name: Install build tools (Windows)
+      - name: Install dependencies (Windows)
         if: matrix.os == 'windows-latest'
         run: |
           choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+          choco install qt6
 
-      - name: Compile C++ extensions with CMake
+      - name: Install Python packages
         run: |
-          mkdir build
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build with CMake
+        run: |
+          mkdir -p build
           cd build
-          cmake ..
+          cmake .. -DCMAKE_BUILD_TYPE=Release
           cmake --build . --config Release
 
-      - name: Copy compiled extensions
-        run: |
-          # Copy all compiled .pyd/.so files to root directory
-          find build -name "*.pyd" -o -name "*.so" | xargs -I {} cp {} .
-
-      - name: Build Fluid Audio with PyInstaller
+      - name: Build with PyInstaller
         run: |
           pyinstaller --onefile \
-            --name "FluidAudio" \
-            --icon "${{ matrix.icon }}" \
+            --name "FluidAudio-${{ matrix.os }}" \
+            --icon "icon.ico" \
             --add-data "mainwindow.py:." \
             --add-data "audio_engine.py:." \
             --add-data "cards_ui.py:." \
             --add-data "fading_stack.py:." \
             --add-data "*.pyd:." \
             --add-data "*.so:." \
-            --hidden-import "PyQt5" \
-            --hidden-import "PyQt5.QtCore" \
-            --hidden-import "PyQt5.QtGui" \
-            --hidden-import "PyQt5.QtWidgets" \
-            mainwindow.py
-
-      - name: Rename output for platform
-        run: |
-          mv dist/FluidAudio dist/FluidAudio-${{ matrix.os }}${{ matrix.ext }}
+            --hidden-import "PySide6" \
+            --hidden-import "PySide6.QtCore" \
+            --hidden-import "PySide6.QtGui" \
+            --hidden-import "PySide6.QtWidgets" \
+            main.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
