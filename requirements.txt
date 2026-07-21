@@ -6,3 +6,5 @@ requests
 keyring
 cryptography
 numpy
+setuptools
+wheel
