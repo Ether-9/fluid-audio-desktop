@@ -1,24 +1,30 @@
-name: Build Multi-Platform App
+name: Build Fluid Audio for All Platforms
 
 on:
   push:
     tags:
-      - 'v*'  # Triggers when you push tags like v1.0.0
-  workflow_dispatch:  # Allows manual triggering from Actions tab
+      - 'v*'
+  workflow_dispatch:
 
 jobs:
   build:
-    name: Build for ${{ matrix.os }}
+    name: Build Fluid Audio for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
           - os: windows-latest
             ext: .exe
+            icon: icon.ico
+            python_ext: .pyd
           - os: macos-latest
             ext: .dmg
+            icon: icon.ico
+            python_ext: .so
           - os: ubuntu-latest
             ext: .AppImage
+            icon: icon.ico
+            python_ext: .so
 
     steps:
       - name: Checkout code
@@ -35,13 +41,54 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
-      - name: Build with PyInstaller
+      - name: Install build tools (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
-          # For Windows .exe
-          pyinstaller --onefile --name "FluidAudio-${{ matrix.os }}" main.py
-          
-          # If you have .pyd files, copy them to the dist folder
-          # Copy any .pyd files from your source to dist/
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake
+
+      - name: Install build tools (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install cmake
+
+      - name: Install build tools (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+
+      - name: Compile C++ extensions with CMake
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          cmake --build . --config Release
+
+      - name: Copy compiled extensions
+        run: |
+          # Copy all compiled .pyd/.so files to root directory
+          find build -name "*.pyd" -o -name "*.so" | xargs -I {} cp {} .
+
+      - name: Build Fluid Audio with PyInstaller
+        run: |
+          pyinstaller --onefile \
+            --name "FluidAudio" \
+            --icon "${{ matrix.icon }}" \
+            --add-data "mainwindow.py:." \
+            --add-data "audio_engine.py:." \
+            --add-data "cards_ui.py:." \
+            --add-data "fading_stack.py:." \
+            --add-data "*.pyd:." \
+            --add-data "*.so:." \
+            --hidden-import "PyQt5" \
+            --hidden-import "PyQt5.QtCore" \
+            --hidden-import "PyQt5.QtGui" \
+            --hidden-import "PyQt5.QtWidgets" \
+            mainwindow.py
+
+      - name: Rename output for platform
+        run: |
+          mv dist/FluidAudio dist/FluidAudio-${{ matrix.os }}${{ matrix.ext }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
