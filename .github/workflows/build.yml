@@ -1,24 +1,30 @@
 name: Build Fluid Audio for All Platforms
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
-  workflow_dispatch:
 
 jobs:
   build:
-    name: Build for ${{ matrix.os }}
+    name: Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
-          - os: windows-latest
-            ext: .exe
-          - os: macos-latest
-            ext: .dmg
           - os: ubuntu-latest
             ext: .AppImage
+            qt_packages: qt6-base-dev qt6-base-dev-tools qt6-tools-dev libqt6core5compat6-dev
+            extra_packages: librubberband-dev
+          - os: windows-latest
+            ext: .exe
+            qt_packages: ""
+            extra_packages: ""
+          - os: macos-latest
+            ext: .dmg
+            qt_packages: ""
+            extra_packages: ""
 
     steps:
       - name: Checkout code
@@ -29,22 +35,21 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install dependencies (Ubuntu)
+      - name: Install Ubuntu dependencies
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             build-essential \
             cmake \
+            pkg-config \
             qt6-base-dev \
             qt6-base-dev-tools \
             libqt6core5compat6-dev \
-            libqt6network6 \
-            libqt6sql6 \
             librubberband-dev \
-            pkg-config
+            libssl-dev
 
-      - name: Install dependencies (macOS)
+      - name: Install macOS dependencies
         if: matrix.os == 'macos-latest'
         run: |
           brew install cmake
@@ -52,43 +57,54 @@ jobs:
           brew install rubberband
           brew install pkg-config
 
-      - name: Install dependencies (Windows)
+      - name: Install Windows dependencies
         if: matrix.os == 'windows-latest'
         run: |
-          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
-          choco install qt6
+          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
+          choco install qt6 -y
 
       - name: Install Python packages
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build with CMake
+      - name: Configure CMake
         run: |
           mkdir -p build
           cd build
           cmake .. -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release
+
+      - name: Build with CMake
+        run: |
+          cd build
+          cmake --build . --config Release --parallel 2
 
       - name: Build with PyInstaller
         run: |
           pyinstaller --onefile \
-            --name "FluidAudio-${{ matrix.os }}" \
+            --name "FluidAudio" \
             --icon "icon.ico" \
             --add-data "mainwindow.py:." \
             --add-data "audio_engine.py:." \
             --add-data "cards_ui.py:." \
             --add-data "fading_stack.py:." \
-            --add-data "*.pyd:." \
-            --add-data "*.so:." \
             --hidden-import "PySide6" \
             --hidden-import "PySide6.QtCore" \
             --hidden-import "PySide6.QtGui" \
             --hidden-import "PySide6.QtWidgets" \
             main.py
 
+      - name: Rename output
+        run: |
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            mv dist/FluidAudio.exe dist/FluidAudio${{ matrix.ext }}
+          else
+            mv dist/FluidAudio dist/FluidAudio${{ matrix.ext }}
+          fi
+        shell: bash
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: FluidAudio-${{ matrix.os }}
-          path: dist/FluidAudio-${{ matrix.os }}${{ matrix.ext }}
+          path: dist/FluidAudio${{ matrix.ext }}
