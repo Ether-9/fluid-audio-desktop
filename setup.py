@@ -2,6 +2,7 @@ from setuptools import setup, Extension
 import pybind11
 import os
 
+# ALL your C++ source files
 cpp_sources = [
     'AdvancedEqualizer.cpp',
     'AlbumArtDownloader.cpp',
@@ -28,7 +29,8 @@ native_module = Extension(
         '.',
     ],
     language='c++',
-    extra_compile_args=['-std=c++17', '-O3', '-fPIC'],
+    extra_compile_args=['-std=c++17', '-O3'],
+    libraries=['rubberband'],  # Link RubberBand library
 )
 
 setup(
