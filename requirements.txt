@@ -1,0 +1,8 @@
+pyinstaller
+PySide6
+pybind11
+rubberband
+requests
+keyring
+cryptography
+numpy
