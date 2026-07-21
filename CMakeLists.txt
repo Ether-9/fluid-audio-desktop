@@ -4,11 +4,6 @@ project(NativeAudioEngine)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Enable AUTOMOC for Qt
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
-
 # Find Python
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 
@@ -24,7 +19,6 @@ pkg_check_modules(RUBBERBAND REQUIRED rubberband)
 
 # Create the module
 pybind11_add_module(native_audio
-    # Source files
     AdvancedEqualizer.cpp
     AlbumArtDownloader.cpp
     AlbumArtWidget.cpp
@@ -57,20 +51,18 @@ target_link_libraries(native_audio PRIVATE
     ${RUBBERBAND_LIBRARIES}
 )
 
-# Platform-specific libraries
+# Platform-specific
 if(WIN32)
     target_link_libraries(native_audio PRIVATE ole32)
 elseif(APPLE)
     target_link_libraries(native_audio PRIVATE 
         "-framework CoreAudio" 
         "-framework AudioToolbox"
-        "-framework CoreFoundation"
     )
 else()
     target_link_libraries(native_audio PRIVATE pthread dl m)
 endif()
 
-# Set output directory
 set_target_properties(native_audio PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
