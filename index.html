@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluid Audio – Tune Your Music to Solfeggio Frequencies</title>
+    <!-- Primary Meta Tags -->
+<meta name="title" content="Fluid Audio - Solfeggio & Frequency Shifter Desktop App">
+<meta name="description" content="Download Fluid Audio, a real-time pitch-shifting desktop app designed to convert music into Solfeggio frequencies (528Hz, 432Hz, 639Hz) without changing tempo.">
+<meta name="keywords" content="frequency shifter app, solfeggio frequency converter, 528hz pitch shifter download, audio frequency shifter desktop, 432hz converter">
+
+<!-- Open Graph / Social Media Preview -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Fluid Audio - Frequency Shifter Desktop App">
+<meta property="og:description" content="Convert your audio files into Solfeggio frequencies in real-time. Fast, native C++ audio engine.">
+<meta property="og:image" content="https://yourdomain.com/assets/app-preview.png">
+
+<!-- Google SoftwareApplication Schema (Drives Rich Search Snippets) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Fluid Audio Frequency Shifter",
+  "operatingSystem": "Windows 10, Windows 11, macOS, Linux",
+  "applicationCategory": "MultimediaApplication",
+  "offers": {
+    "@type": "Offer",
+    "price": "0.00",
+    "priceCurrency": "USD"
+  },
+  "description": "Desktop software that pitch-shifts audio files to Solfeggio frequencies (e.g. 528Hz, 432Hz) using a high-precision phase vocoder engine.",
+  "downloadUrl": "https://github.com/yourusername/your-repo/releases/download/v1.0.0/FluidAudio-Win.exe"
+}
+</script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#0b0e14',
+                        cardBg: 'rgba(18, 24, 38, 0.7)',
+                        cyanAccent: '#00f3ff',
+                        violetAccent: '#a855f7',
+                        amberAccent: '#f59e0b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & Lucide Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            background-color: #0b0e14;
+            font-family: 'Inter', sans-serif;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        .glow-cyan {
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.35);
+        }
+        .glow-violet {
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.35);
+        }
+        .glass-panel {
+            background: rgba(18, 24, 38, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(26, 34, 52, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            border-color: rgba(0, 243, 255, 0.4);
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body class="relative min-h-screen selection:bg-cyanAccent selection:text-black">
+
+    <!-- Interactive Canvas Background -->
+    <canvas id="visualizerCanvas" class="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-40"></canvas>
+
+    <!-- Navigation Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/10 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyanAccent via-violetAccent to-amberAccent flex items-center justify-center font-bold text-black text-xl shadow-lg shadow-cyanAccent/20">
+                    ~
+                </div>
+                <span class="text-xl font-bold tracking-wider text-white">FLUID<span class="text-cyanAccent">AUDIO</span></span>
+            </div>
+
+            <nav class="hidden md:flex gap-8 text-sm text-slate-300 font-medium">
+                <a href="#frequencies" class="hover:text-cyanAccent transition">Frequencies</a>
+                <a href="#features" class="hover:text-cyanAccent transition">Features</a>
+                <a href="#converter" class="hover:text-cyanAccent transition">Live Demo</a>
+                <a href="#downloads" class="hover:text-cyanAccent transition">Download</a>
+            </nav>
+
+            <a href="#downloads" class="px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-gradient-to-r from-cyanAccent to-violetAccent text-slate-950 hover:brightness-110 transition glow-cyan">
+                Get App
+            </a>
+        </div>
+    </header>
+
+    <main class="relative z-10 pt-28">
+
+        <!-- Hero Section -->
+        <section class="max-w-7xl mx-auto px-6 py-20 text-center min-h-[85vh] flex flex-col justify-center items-center">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel border border-cyanAccent/30 text-cyanAccent text-xs uppercase font-semibold tracking-widest mb-8 animate-pulse">
+                <i data-lucide="sparkles" class="w-4 h-4"></i> Real-Time Solfeggio Audio Engine
+            </div>
+
+            <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight max-w-4xl text-white leading-tight">
+                Tune Your World to the <span class="bg-gradient-to-r from-cyanAccent via-violetAccent to-amberAccent bg-clip-text text-transparent">Frequency of Healing</span>
+            </h1>
+
+            <p class="mt-6 text-lg sm:text-xl text-slate-400 max-w-2xl font-light leading-relaxed">
+                Experience music re-tuned in real time to sacred Solfeggio Frequencies from <span class="text-white font-medium">174 Hz</span> to <span class="text-white font-medium">963 Hz</span>.
+            </p>
+
+            <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md">
+                <a href="#downloads" id="primaryDownloadBtn" class="w-full sm:w-auto px-8 py-4 rounded-xl font-semibold bg-cyanAccent text-slate-950 flex items-center justify-center gap-3 hover:bg-cyan-300 transition glow-cyan">
+                    <i data-lucide="download" class="w-5 h-5"></i>
+                    <span id="detectedOS">Download Fluid Audio</span>
+                </a>
+                <a href="#converter" class="w-full sm:w-auto px-8 py-4 rounded-xl font-semibold glass-panel text-slate-200 hover:text-white hover:border-violetAccent/50 transition flex items-center justify-center gap-2">
+                    <i data-lucide="play-circle" class="w-5 h-5 text-violetAccent"></i>
+                    Try Online Demo
+                </a>
+            </div>
+
+            <p class="mt-4 text-xs text-slate-500" id="osSubtext">Auto-detected for your system. Supports Windows, macOS, & Linux.</p>
+        </section>
+
+        <!-- Solfeggio Frequency Interactive Selector -->
+        <section id="frequencies" class="max-w-7xl mx-auto px-6 py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl sm:text-4xl font-bold text-white">Solfeggio Sound Matrix</h2>
+                <p class="text-slate-400 mt-2">Click any frequency to listen to a synthesized harmonic tone & change visual atmosphere</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="frequencyGrid">
+                <!-- JS populates cards here dynamically -->
+            </div>
+        </section>
+
+        <!-- Features Grid -->
+        <section id="features" class="max-w-7xl mx-auto px-6 py-20">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-white">Built for Audiophiles & Practitioners</h2>
+                <p class="text-slate-400 mt-2">Zero latency, loss-free audio routing for meditation, work, and sleep</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="glass-card p-6 rounded-2xl">
+                    <div class="w-12 h-12 rounded-xl bg-cyanAccent/10 text-cyanAccent flex items-center justify-center mb-4">
+                        <i data-lucide="sliders" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Real-Time Shift Engine</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Process system audio or local files instantly without pitch degradation or artificial artifacts.</p>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl">
+                    <div class="w-12 h-12 rounded-xl bg-violetAccent/10 text-violetAccent flex items-center justify-center mb-4">
+                        <i data-lucide="disc" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Batch Studio Export</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Convert entire music collections into high-fidelity 24-bit FLAC, WAV, or MP3 with custom profiles.</p>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl">
+                    <div class="w-12 h-12 rounded-xl bg-amberAccent/10 text-amberAccent flex items-center justify-center mb-4">
+                        <i data-lucide="bookmark" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Preset Preservation</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Save custom frequency profiles for meditation sessions, deep focus work, or sleep routines.</p>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl">
+                    <div class="w-12 h-12 rounded-xl bg-cyanAccent/10 text-cyanAccent flex items-center justify-center mb-4">
+                        <i data-lucide="zap" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Ultra-Low Latency</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Engineered using native C++ audio nodes for virtual driver integration and under 5ms latency.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Web Audio Drag-and-Drop Converter Demo -->
+        <section id="converter" class="max-w-4xl mx-auto px-6 py-20">
+            <div class="glass-panel p-8 sm:p-12 rounded-3xl text-center relative border border-cyanAccent/20">
+                <h2 class="text-3xl font-bold text-white mb-2">In-Browser Live Converter</h2>
+                <p class="text-slate-400 mb-8 text-sm">Upload a sound file to run it live through our browser Web Audio Solfeggio Resonator</p>
+
+                <div id="dropZone" class="border-2 border-dashed border-slate-700 hover:border-cyanAccent rounded-2xl p-8 cursor-pointer transition bg-obsidian/40 flex flex-col items-center justify-center gap-4">
+                    <i data-lucide="upload-cloud" class="w-12 h-12 text-cyanAccent"></i>
+                    <div>
+                        <p class="text-white font-medium">Drag and drop audio file here or click to browse</p>
+                        <p class="text-xs text-slate-500 mt-1">Supports MP3, WAV, FLAC, OGG (Max preview 15s)</p>
+                    </div>
+                    <input type="file" id="audioFileInput" accept="audio/*" class="hidden">
+                </div>
+
+                <div id="playerControls" class="mt-8 hidden flex-col items-center gap-4">
+                    <div class="flex items-center gap-4">
+                        <button id="playPauseBtn" class="w-12 h-12 rounded-full bg-cyanAccent text-slate-950 flex items-center justify-center font-bold hover:brightness-110">
+                            <i data-lucide="play" class="w-6 h-6"></i>
+                        </button>
+                        <span id="fileName" class="text-slate-300 text-sm truncate max-w-xs">No file loaded</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs text-slate-400">
+                        <span>Target Frequency Filter:</span>
+                        <select id="converterFreqSelect" class="bg-slate-900 text-cyanAccent border border-slate-700 rounded-lg px-3 py-1.5 focus:outline-none">
+                            <option value="174">174 Hz (Grounding)</option>
+                            <option value="285">285 Hz (Healing)</option>
+                            <option value="396">396 Hz (Liberation)</option>
+                            <option value="417">417 Hz (Change)</option>
+                            <option value="528" selected>528 Hz (Transformation)</option>
+                            <option value="639">639 Hz (Harmonization)</option>
+                            <option value="741">741 Hz (Intuition)</option>
+                            <option value="852">852 Hz (Spiritual Order)</option>
+                            <option value="963">963 Hz (Crown Focus)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Download & System Requirements -->
+        <section id="downloads" class="max-w-7xl mx-auto px-6 py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl sm:text-4xl font-bold text-white">Get Fluid Audio Native</h2>
+                <p class="text-slate-400 mt-2">Available for all desktop and mobile platforms</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+                <!-- Windows -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <i data-lucide="monitor" class="w-8 h-8 text-cyanAccent mb-4"></i>
+                        <h3 class="text-lg font-bold text-white">Windows</h3>
+                        <p class="text-xs text-slate-400 mt-1">Windows 10 / 11 (64-bit)</p>
+                    </div>
+                    <a href="#" class="mt-6 w-full py-2.5 rounded-lg bg-slate-800 hover:bg-cyanAccent hover:text-slate-950 text-white text-xs font-semibold transition text-center block">Download .exe</a>
+                </div>
+
+                <!-- macOS -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <i data-lucide="apple" class="w-8 h-8 text-violetAccent mb-4"></i>
+                        <h3 class="text-lg font-bold text-white">macOS</h3>
+                        <p class="text-xs text-slate-400 mt-1">Universal (Apple Silicon & Intel)</p>
+                    </div>
+                    <a href="#" class="mt-6 w-full py-2.5 rounded-lg bg-slate-800 hover:bg-violetAccent hover:text-slate-950 text-white text-xs font-semibold transition text-center block">Download .dmg</a>
+                </div>
+
+                <!-- Linux -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <i data-lucide="terminal" class="w-8 h-8 text-amberAccent mb-4"></i>
+                        <h3 class="text-lg font-bold text-white">Linux</h3>
+                        <p class="text-xs text-slate-400 mt-1">Ubuntu / Debian / AppImage</p>
+                    </div>
+                    <a href="#" class="mt-6 w-full py-2.5 rounded-lg bg-slate-800 hover:bg-amberAccent hover:text-slate-950 text-white text-xs font-semibold transition text-center block">Download AppImage</a>
+                </div>
+
+                <!-- Mobile -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <i data-lucide="smartphone" class="w-8 h-8 text-cyanAccent mb-4"></i>
+                        <h3 class="text-lg font-bold text-white">iOS & Android</h3>
+                        <p class="text-xs text-slate-400 mt-1">Mobile Companion App</p>
+                    </div>
+                    <a href="#" class="mt-6 w-full py-2.5 rounded-lg bg-slate-800 hover:bg-cyanAccent hover:text-slate-950 text-white text-xs font-semibold transition text-center block">Mobile Stores</a>
+                </div>
+            </div>
+
+            <!-- Expandable System Requirements -->
+            <div class="max-w-2xl mx-auto glass-panel rounded-2xl p-6">
+                <button id="toggleRequirements" class="w-full flex justify-between items-center text-left text-white font-medium text-sm">
+                    <span>System Requirements & Technical Notes</span>
+                    <i data-lucide="chevron-down" id="reqChevron" class="w-5 h-5 transition-transform"></i>
+                </button>
+                <div id="requirementsContent" class="hidden mt-4 pt-4 border-t border-slate-800 text-xs text-slate-400 space-y-2">
+                    <p>• <strong>RAM:</strong> 4 GB minimum (8 GB recommended for batch export)</p>
+                    <p>• <strong>Audio Driver:</strong> ASIO / CoreAudio / WASAPI support supported</p>
+                    <p>• <strong>Browser Fallback:</strong> Requires Web Audio API and WebGL support</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 glass-panel relative z-10 py-12 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-lg bg-cyanAccent text-black flex items-center justify-center font-bold text-xs">~</div>
+                <span class="text-sm font-bold tracking-wider text-white">FLUID AUDIO</span>
+            </div>
+
+            <div class="flex gap-6 text-xs text-slate-400">
+                <a href="#" class="hover:text-cyanAccent transition">Documentation</a>
+                <a href="#" class="hover:text-cyanAccent transition">FAQ</a>
+                <a href="#" class="hover:text-cyanAccent transition">Privacy Policy</a>
+                <a href="#" class="hover:text-cyanAccent transition">Terms of Service</a>
+            </div>
+
+            <p class="text-xs text-slate-500">© 2026 Fluid Audio Inc. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Engine & Web Audio Scripts -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // 1. Solfeggio Data Array
+        const frequencies = [
+            { hz: 174, name: "Pain Reduction & Grounding", color: "#3b82f6" },
+            { hz: 285, name: "Tissue Healing & Energy", color: "#06b6d4" },
+            { hz: 396, name: "Liberation from Fear & Guilt", color: "#10b981" },
+            { hz: 417, name: "Facilitating Change & Reset", color: "#84cc16" },
+            { hz: 528, name: "Transformation & Miracles", color: "#eab308" },
+            { hz: 639, name: "Harmonization & Relationships", color: "#f97316" },
+            { hz: 741, name: "Awakening Intuition & Detox", color: "#ef4444" },
+            { hz: 852, name: "Returning to Spiritual Order", color: "#a855f7" },
+            { hz: 963, name: "Crown Focus & Divine Awareness", color: "#ec4899" }
+        ];
+
+        // Populate Frequency Grid
+        const grid = document.getElementById('frequencyGrid');
+        frequencies.forEach(f => {
+            const card = document.createElement('div');
+            card.className = "glass-card p-6 rounded-2xl cursor-pointer flex flex-col justify-between border-t-2";
+            card.style.borderTopColor = f.color;
+            card.innerHTML = `
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-2xl font-extrabold text-white">${f.hz} <span class="text-xs text-slate-400">Hz</span></span>
+                        <button class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-white transition">
+                            <i data-lucide="volume-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-300 font-medium">${f.name}</p>
+                </div>
+                <div class="mt-4 text-[10px] uppercase font-bold tracking-widest text-slate-500">Click to preview resonance</div>
+            `;
+            card.addEventListener('click', () => playSolfeggioTone(f.hz, f.color));
+            grid.appendChild(card);
+        });
+        lucide.createIcons();
+
+        // 2. Audio Context & Oscillator Synthesizer
+        let audioCtx = null;
+        let activeOsc = null;
+        let activeGain = null;
+        let currentColor = '#00f3ff';
+
+        function playSolfeggioTone(freq, color) {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            // Update Canvas Visualizer Color Accent
+            currentColor = color;
+
+            if (activeGain) {
+                activeGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
+                setTimeout(() => { if (activeOsc) activeOsc.stop(); }, 300);
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+            gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.15, audioCtx.currentTime + 0.2);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.5);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 2.5);
+
+            activeOsc = osc;
+            activeGain = gain;
+        }
+
+        // 3. Fluid Wave Visualizer Canvas
+        const canvas = document.getElementById('visualizerCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let step = 0;
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function renderCanvas() {
+            ctx.clearRect(0, 0, width, height);
+            step += 0.01;
+
+            ctx.beginPath();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = currentColor;
+
+            for (let x = 0; x < width; x += 10) {
+                const y = Math.sin(x * 0.005 + step) * 40 + Math.cos(x * 0.002 + step) * 20 + height / 2;
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            requestAnimationFrame(renderCanvas);
+        }
+        renderCanvas();
+
+        // 4. OS Detection Logic
+        const userAgent = navigator.userAgent;
+        const osElem = document.getElementById('detectedOS');
+        if (userAgent.indexOf("Win") !== -1) osElem.innerText = "Download for Windows (64-bit)";
+        else if (userAgent.indexOf("Mac") !== -1) osElem.innerText = "Download for macOS";
+        else if (userAgent.indexOf("Linux") !== -1) osElem.innerText = "Download for Linux";
+
+        // 5. Requirements Accordion
+        const reqBtn = document.getElementById('toggleRequirements');
+        const reqContent = document.getElementById('requirementsContent');
+        const reqChevron = document.getElementById('reqChevron');
+
+        reqBtn.addEventListener('click', () => {
+            reqContent.classList.toggle('hidden');
+            reqChevron.classList.toggle('rotate-180');
+        });
+
+        // 6. In-Browser Audio File Filter Demo
+        const dropZone = document.getElementById('dropZone');
+        const audioFileInput = document.getElementById('audioFileInput');
+        const playerControls = document.getElementById('playerControls');
+        const fileNameElem = document.getElementById('fileName');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const converterFreqSelect = document.getElementById('converterFreqSelect');
+
+        let userAudioElement = null;
+        let userSourceNode = null;
+        let biquadFilter = null;
+
+        dropZone.addEventListener('click', () => audioFileInput.click());
+
+        audioFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileNameElem.innerText = file.name;
+                playerControls.classList.remove('hidden');
+                playerControls.classList.add('flex');
+
+                const fileURL = URL.createObjectURL(file);
+                if (userAudioElement) userAudioElement.pause();
+
+                userAudioElement = new Audio(fileURL);
+
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+                userSourceNode = audioCtx.createMediaElementSource(userAudioElement);
+                biquadFilter = audioCtx.createBiquadFilter();
+
+                biquadFilter.type = 'bandpass';
+                biquadFilter.frequency.value = parseFloat(converterFreqSelect.value);
+
+                userSourceNode.connect(biquadFilter);
+                biquadFilter.connect(audioCtx.destination);
+            }
+        });
+
+        converterFreqSelect.addEventListener('change', (e) => {
+            if (biquadFilter) {
+                biquadFilter.frequency.setValueAtTime(parseFloat(e.target.value), audioCtx.currentTime);
+            }
+        });
+
+        playPauseBtn.addEventListener('click', () => {
+            if (!userAudioElement) return;
+            if (userAudioElement.paused) {
+                audioCtx.resume();
+                userAudioElement.play();
+                playPauseBtn.innerHTML = '<i data-lucide="pause" class="w-6 h-6"></i>';
+            } else {
+                userAudioElement.pause();
+                playPauseBtn.innerHTML = '<i data-lucide="play" class="w-6 h-6"></i>';
+            }
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
