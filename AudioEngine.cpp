@@ -335,9 +335,12 @@ namespace pybind11 { namespace detail {
 // =========================================================================
 // Unified PYBIND11 Module Definitions (AudioEngine Only)
 // =========================================================================
-PYBIND11_MODULE(native_audio, m) {
-    m.doc() = "Native Audio Engine Core Library";
+// At the bottom of AudioEngine.cpp, combine both into one module:
 
+PYBIND11_MODULE(native_audio, m) {
+    m.doc() = "Fluid Audio Native Core Library";
+
+    // 1. Audio playback engine class
     py::class_<AudioEngine>(m, "AudioEngine")
         .def(py::init([](py::object parent) {
             QObject* cpp_parent = nullptr;
@@ -372,11 +375,10 @@ PYBIND11_MODULE(native_audio, m) {
         .def("append_to_queue", &AudioEngine::appendToQueue)
         .def("clear_queue", &AudioEngine::clearQueue)
         .def("is_finished", &AudioEngine::isFinished);
-}
 
-PYBIND11_MODULE(AudioEngine, m) {
-    pybind11::class_<Engine>(m, "Engine")
-        .def(pybind11::init<>())
+    // 2. Trial/License management class (Engine)
+    py::class_<Engine>(m, "Engine")
+        .def(py::init<>())
         .def("unlock_premium", &Engine::unlock_premium)
         .def("set_trial_status", &Engine::set_trial_status)
         .def("can_play_audio", &Engine::can_play_audio)

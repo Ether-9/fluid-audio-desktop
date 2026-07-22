@@ -4,7 +4,6 @@ import time
 import json
 import os
 import requests
-import AudioEngine
 import uuid
 
 # Dynamically add the build directory to path so python can find the compiled native binary module
@@ -12,15 +11,20 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 try:
     import native_audio
+    # Now Engine is available as native_audio.Engine
+    Engine = native_audio.Engine
 except ImportError as e:
     raise ImportError(
         "Could not load the native C++ audio module. "
         "Make sure you compiled native_audio using CMake and your compiler.\n"
         f"Detail: {e}"
     )
-    
-
-WORKER_URL = "https://fluid-audio-trial-checker.YOUR_SUBDOMAIN.workers.dev"
+except AttributeError as e:
+    raise ImportError(
+        "Could not load the Engine class from native_audio.\n"
+        f"Detail: {e}"
+    )
+WORKER_URL = "https://fluid-audio-trial-checker.kawukijoshua19.workers.dev/"
 
 class FluidAudioBackend:
     def __init__(self):
@@ -60,7 +64,7 @@ class FluidAudioBackend:
     
 class FluidAudioBackend:
     def __init__(self):
-        self.engine = AudioEngine.Engine()
+        self.engine = Engine()
         self.secret_hash = "FLUID_AUDIO_SECURE_HASH_2026"
         self.config_path = os.path.expanduser("~/.fluid_audio_data.json")
         
